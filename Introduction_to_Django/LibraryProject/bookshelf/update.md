@@ -1,12 +1,16 @@
-# Update Operation
+# Update a Book Title
 
-Command:
 ```python
-from bookshelf.models import Book
+from bookshelf.models import Book  
 
-book_to_update = Book.objects.get(title="1984")
-book_to_update.title = "Nineteen Eighty-Four"
-book_to_update.save()
+# Retrieve the book
+book = Book.objects.get(title="1984")  
 
-# Explicitly print the updated title
-print(f"Updated Title: {book_to_update.title}")
+# Update the book title  
+book.title = "Nineteen Eighty-Four"  
+
+# Save changes  
+book.save()  
+
+# Confirm update  
+print(book.title)  
