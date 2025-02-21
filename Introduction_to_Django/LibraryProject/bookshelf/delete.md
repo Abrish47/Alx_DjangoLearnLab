@@ -1,16 +1,13 @@
+# Delete a Book
 
----
-
-## **5. Save All Commands and Outputs in `CRUD_operations.md`**
-
-Combine all the commands and outputs into a single Markdown file named `CRUD_operations.md`:
-
-```markdown
-# CRUD Operations Documentation
-
-## Create
 ```python
-from bookshelf.models import Book
+from bookshelf.models import Book  
 
-new_book = Book.objects.create(title="1984", author="George Orwell", publication_year=1949)
-print(new_book)
+# Retrieve the book  
+book = Book.objects.get(title="Nineteen Eighty-Four")  
+
+# Delete the book  
+book.delete()  
+
+# Confirm deletion  
+print(Book.objects.all())  # Should return an empty QuerySet
