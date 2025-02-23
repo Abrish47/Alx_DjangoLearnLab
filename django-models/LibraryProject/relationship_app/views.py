@@ -2,6 +2,7 @@ from django.contrib.auth.forms import UserCreationForm  # ✅ Ensure this is inc
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import user_passes_test 
 
 # User Login View
 def user_login(request):
@@ -14,6 +15,13 @@ def user_login(request):
     else:
         form = AuthenticationForm()
     return render(request, "relationship_app/login.html", {"form": form})
+    
+def is_admin(user):  
+    return hasattr(user, "userprofile") and user.userprofile.role == "Admin"  
+
+@user_passes_test(is_admin)  
+def admin_view(request):  
+    return render(request, "relationship_app/admin_dashboard.html")
 
 # User Logout View
 def user_logout(request):
