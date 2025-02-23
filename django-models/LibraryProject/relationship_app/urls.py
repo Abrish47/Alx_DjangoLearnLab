@@ -15,4 +15,12 @@ urlpatterns = [
     path('add/', views.add_book, name='add_book'),
     path('edit/<int:pk>/', views.edit_book, name='edit_book'),
     path('delete/<int:pk>/', views.delete_book, name='delete_book'),
+     # Add book path
+    path('add_book/', views.add_book, name='add_book'),
+
+    # Edit book path with primary key (pk) as a dynamic part of the URL
+    path('edit_book/<int:pk>/', views.edit_book, name='edit_book'),
+
+    # Delete book path with primary key (pk)
+    path('delete_book/<int:pk>/', views.delete_book, name='delete_book'),
 ]
