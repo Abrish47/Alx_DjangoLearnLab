@@ -4,13 +4,13 @@ from django.views.generic.detail import DetailView
 from .models import Book, Library 
 from .models import Library  # Import both Book and Library models
 
-# Function-based view to list all books
+from django.shortcuts import render
+from .models import Book
+
 def list_books(request):
-    # Fetch all books from the database
-    books = Book.objects.all()
-    
-    # Render the template with the list of books
-    return render(request, 'relationship_app/list_books.html', {'books': books})
+    books = Book.objects.all()  # Fetch all books
+    return render(request, "relationship_app/list_books.html", {"books": books})
+
 
 # Class-based view to display details of a specific library
 class LibraryDetailView(DetailView):
