@@ -20,7 +20,7 @@ def register(request):
 
 # Permission-protected views
 @permission_required('bookshelf.can_view', raise_exception=True)
-def book_list(request):
+def book_list(request):  
     books = Book.objects.all()
     return render(request, 'bookshelf/list_books.html', {'books': books})
 
@@ -29,7 +29,7 @@ def create_book(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         Book.objects.create(title=title)
-        return redirect('bookshelf:list_books')
+        return redirect('bookshelf:book_list') 
     return render(request, 'bookshelf/create_book.html')
 
 @permission_required('bookshelf.can_edit', raise_exception=True)
@@ -38,7 +38,7 @@ def edit_book(request, book_id):
     if request.method == 'POST':
         book.title = request.POST.get('title')
         book.save()
-        return redirect('bookshelf:list_books')
+        return redirect('bookshelf:book_list')  
     return render(request, 'bookshelf/edit_book.html', {'book': book})
 
 @permission_required('bookshelf.can_delete', raise_exception=True)
@@ -46,5 +46,5 @@ def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
         book.delete()
-        return redirect('bookshelf:list_books')
+        return redirect('bookshelf:book_list')  
     return render(request, 'bookshelf/delete_book.html', {'book': book})
