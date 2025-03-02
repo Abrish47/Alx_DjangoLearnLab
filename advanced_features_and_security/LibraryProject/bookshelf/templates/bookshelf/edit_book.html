@@ -8,7 +8,7 @@
     <h1>Edit Book</h1>
     <form method="post">
         {% csrf_token %}
-        <label>Title: <input type="text" name="title" value="{{ book.title }}" required></label><br>
+        {{ form.as_p }}
         <button type="submit">Save</button>
     </form>
     <a href="{% url 'bookshelf:book_list' %}">Back</a>
