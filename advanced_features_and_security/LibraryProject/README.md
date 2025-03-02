@@ -1,25 +1,21 @@
-# Permissions and Groups Setup
+# Security Measures in LibraryProject
 
-## Overview
-This Django application (`LibraryProject/bookshelf`) implements custom permissions and groups to control access to `Book` model actions.
+## Settings (settings.py)
+- `DEBUG = False`: Prevents detailed error leaks in production.
+- `SECURE_BROWSER_XSS_FILTER`: Enables browser XSS protection.
+- `X_FRAME_OPTIONS = 'DENY'`: Prevents clickjacking.
+- `SECURE_CONTENT_TYPE_NOSNIFF`: Stops MIME-type sniffing.
+- `CSRF_COOKIE_SECURE` & `SESSION_COOKIE_SECURE`: Ensures HTTPS-only cookies.
+- CSP via `django-csp`: Limits content sources to reduce XSS risk.
 
-## Permissions
-Defined in `bookshelf/models.py` for the `Book` model:
-- `can_view`: View book list
-- `can_create`: Create new books
-- `can_edit`: Edit existing books
-- `can_delete`: Delete books
+## CSRF Protection
+- All forms (e.g., `create_book.html`, `form_example.html`) include `{% csrf_token %}` to prevent CSRF attacks.
 
-## Groups
-Configured via Django admin:
-1. **Viewers**: Has `bookshelf.can_view`
-2. **Editors**: Has `bookshelf.can_create`, `bookshelf.can_edit`
-3. **Admins**: Has all permissions (`can_view`, `can_create`, `can_edit`, `can_delete`)
-
-## Usage
-- Views in `bookshelf/views.py` use `@permission_required` to enforce these permissions.
-- Example: `@permission_required('bookshelf.can_edit', raise_exception=True)` restricts `edit_book` to users with `can_edit`.
+## Views (views.py)
+- Uses Django ORM (`Book.objects.all()`, `get_object_or_404`) to prevent SQL injection.
+- Inputs validated and sanitized via `BookForm` (e.g., `clean_title` strips whitespace).
 
 ## Testing
-- Create users and assign to groups via admin or shell.
-- Test access at `/bookshelf/books/`, `/bookshelf/books/create/`, etc.
+- Test with DEBUG=False and HTTPS (local proxy if needed).
+- Submit invalid inputs (e.g., `<script>`) to `create_book` to verify XSS protection.
+- Attempt form submission without CSRF token to confirm rejection.
