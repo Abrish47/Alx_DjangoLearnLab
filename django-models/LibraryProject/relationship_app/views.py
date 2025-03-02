@@ -10,7 +10,6 @@ from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.views import LoginOut
-from .models import Book, Library
 
 
 # Function-based view: List all books
@@ -24,7 +23,6 @@ class LibraryDetailView(DetailView):
     template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
 
-# Function-based view: List all books
 def list_books(request):
     books = Book.objects.all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
