@@ -1,21 +1,29 @@
-# Security Measures in LibraryProject
+# HTTPS and Security Configuration in LibraryProject
+
+## Overview
+This Django application enforces HTTPS and implements security best practices.
 
 ## Settings (settings.py)
-- `DEBUG = False`: Prevents detailed error leaks in production.
-- `SECURE_BROWSER_XSS_FILTER`: Enables browser XSS protection.
+- `SECURE_SSL_REDIRECT = True`: Redirects all HTTP to HTTPS.
+- `SECURE_HSTS_SECONDS = 31536000`: Enforces HTTPS for 1 year via HSTS.
+- `SECURE_HSTS_INCLUDE_SUBDOMAINS = True`: Applies HSTS to subdomains.
+- `SECURE_HSTS_PRELOAD = True`: Allows HSTS preload for browser trust.
+- `SESSION_COOKIE_SECURE = True`: Session cookies over HTTPS only.
+- `CSRF_COOKIE_SECURE = True`: CSRF cookies over HTTPS only.
 - `X_FRAME_OPTIONS = 'DENY'`: Prevents clickjacking.
-- `SECURE_CONTENT_TYPE_NOSNIFF`: Stops MIME-type sniffing.
-- `CSRF_COOKIE_SECURE` & `SESSION_COOKIE_SECURE`: Ensures HTTPS-only cookies.
-- CSP via `django-csp`: Limits content sources to reduce XSS risk.
+- `SECURE_CONTENT_TYPE_NOSNIFF = True`: Stops MIME sniffing.
+- `SECURE_BROWSER_XSS_FILTER = True`: Enables XSS filter.
+- CSP via `django-csp`: Restricts content sources.
 
-## CSRF Protection
-- All forms (e.g., `create_book.html`, `form_example.html`) include `{% csrf_token %}` to prevent CSRF attacks.
+## Deployment (deployment/nginx.conf)
+- Nginx config redirects HTTP to HTTPS and serves SSL/TLS.
+- Uses Let’s Encrypt certificates for secure communication.
 
-## Views (views.py)
-- Uses Django ORM (`Book.objects.all()`, `get_object_or_404`) to prevent SQL injection.
-- Inputs validated and sanitized via `BookForm` (e.g., `clean_title` strips whitespace).
+## Security Review
+- **Measures**: HTTPS enforced, cookies secured, headers protect against XSS/clickjacking.
+- **Benefits**: Data encrypted, reduced attack surface.
+- **Improvements**: Tighten CSP (remove 'unsafe-inline'), use production-grade database, monitor SSL certificate renewal.
 
 ## Testing
-- Test with DEBUG=False and HTTPS (local proxy if needed).
-- Submit invalid inputs (e.g., `<script>`) to `create_book` to verify XSS protection.
-- Attempt form submission without CSRF token to confirm rejection.
+- Local: Use `DEBUG = True` and a proxy like `ngrok` for HTTPS testing.
+- Production: Deploy with Nginx, verify redirects and headers with browser tools.
