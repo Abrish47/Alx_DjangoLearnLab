@@ -6,6 +6,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import permission_required
 from .models import CustomUser
 from .models import Book
+from .forms import BookForm 
 
 def register(request):
     if request.method == 'POST':
@@ -48,3 +49,12 @@ def delete_book(request, book_id):
         book.delete()
         return redirect('bookshelf:book_list')  
     return render(request, 'bookshelf/delete_book.html', {'book': book})
+
+@permission_required('bookshelf.can_create', raise_exception=True)
+def example_form_view(request):
+    if request.method == 'POST':
+        input_data = request.POST.get('example_input', '').strip()
+        # Example safe handling (no direct SQL, just logging for demo)
+        print(f"User input: {input_data}")  # Replace with actual logic
+        return redirect('bookshelf:book_list')
+    return render(request, 'bookshelf/form_example.html')
