@@ -31,6 +31,10 @@ class CustomUser(AbstractUser):
         return self.username
 
 # Book Model with Custom Permissions
+# - can_view: Allows viewing book instances
+# - can_create: Allows creating new books
+# - can_edit: Allows editing existing books
+# - can_delete: Allows deleting books
 class Book(models.Model):
     title = models.CharField(max_length=200)
     def __str__(self):
