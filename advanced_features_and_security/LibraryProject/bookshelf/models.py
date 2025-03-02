@@ -1,8 +1,6 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import BaseUserManager
 
 # Custom User Manager
 class CustomUserManager(BaseUserManager):
@@ -28,8 +26,20 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractUser):
     date_of_birth = models.DateField(null=True, blank=True)
     profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
-
     objects = CustomUserManager()
-
     def __str__(self):
         return self.username
+
+# Book Model with Custom Permissions
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        permissions = (
+            ('can_view', 'Can view book'),
+            ('can_create', 'Can create book'),
+            ('can_edit', 'Can edit book'),
+            ('can_delete', 'Can delete book'),
+        )
