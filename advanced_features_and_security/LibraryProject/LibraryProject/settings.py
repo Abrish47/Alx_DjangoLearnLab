@@ -149,6 +149,7 @@ SECURE_BROWSER_XSS_FILTER = True  # Prevents XSS by setting X-XSS-Protection hea
 X_FRAME_OPTIONS = 'DENY'  # Prevents clickjacking by disallowing framing
 SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevents MIME-type sniffing by browsers
 CSRF_COOKIE_SECURE = True  # Ensures CSRF cookie is only sent over HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # Trust proxy HTTPS header
 SESSION_COOKIE_SECURE = True  # Ensures session cookie is only sent over HTTPS
 
 # Content Security Policy (basic example)
