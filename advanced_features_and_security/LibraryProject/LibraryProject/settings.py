@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     'relationship_app'
     'relationship_app.apps.RelationshipAppConfig'
 ]
-
+AUTH_USER_MODEL = 'relationship_app.CustomUser'
+# For profile_photo (optional)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
