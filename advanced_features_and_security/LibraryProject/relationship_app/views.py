@@ -16,6 +16,21 @@ from django.contrib.auth.views import LoginOut
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import permission_required
 
+# Role check functions
+def is_admin(user):
+    if user.is_authenticated and hasattr(user, 'userprofile'):
+        return user.userprofile.role == 'Admin'
+    return False
+
+def is_librarian(user):
+    if user.is_authenticated and hasattr(user, 'userprofile'):
+        return user.userprofile.role == 'Librarian'
+    return False
+
+def is_member(user):
+    if user.is_authenticated and hasattr(user, 'userprofile'):
+        return user.userprofile.role == 'Member'
+    return False
 
 # Function-based view: List all books
 def list_books(request):
