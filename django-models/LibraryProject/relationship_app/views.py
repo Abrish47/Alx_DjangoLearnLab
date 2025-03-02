@@ -3,8 +3,10 @@ from django.views.generic.detail import DetailView
 from .models import Book
 from .models import Library
 from .models import UserProfile
+from .models import Author
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.views.generic.detail import DetailView
@@ -12,6 +14,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.views import LoginOut
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required
 
 
 # Function-based view: List all books
@@ -97,4 +100,35 @@ def librarian_view(request):
 
 @user_passes_test(is_member, login_url='/relationship/login/')
 def member_view(request):
+
+@permission_required('relationship_app.can_add_book', login_url='/relationship/login/')
+def add_book(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        author_id = request.POST.get('author')
+        author = get_object_or_404(Author, id=author_id)
+        Book.objects.create(title=title, author=author)
+        return redirect('relationship_app:list_books')
+    authors = Author.objects.all()
+    return render(request, 'relationship_app/add_book.html', {'authors': authors})
+
+@permission_required('relationship_app.can_change_book', login_url='/relationship/login/')
+def edit_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        book.title = request.POST.get('title')
+        author_id = request.POST.get('author')
+        book.author = get_object_or_404(Author, id=author_id)
+        book.save()
+        return redirect('relationship_app:list_books')
+    authors = Author.objects.all()
+    return render(request, 'relationship_app/edit_book.html', {'book': book, 'authors': authors})
+
+@permission_required('relationship_app.can_delete_book', login_url='/relationship/login/')
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        book.delete()
+        return redirect('relationship_app:list_books')
+    return render(request, 'relationship_app/delete_book.html', {'book': book})
     return render(request, 'relationship_app/member_view.html', {'message': 'Welcome, Member!'})
