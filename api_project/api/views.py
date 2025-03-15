@@ -1,7 +1,7 @@
 from rest_framework import generics.ListAPIView
 from .models import Book
 from .serializers import BookSerializer
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import viewsets.ModelViewSet
 
 class BookList(ListAPIView):
     queryset = Book.objects.all()
