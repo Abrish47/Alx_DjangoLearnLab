@@ -6,6 +6,7 @@ from .models import Author
 from .models import Book
 from .serializers import AuthorSerializer
 from .serializers import BookSerializer
+from django_filters import rest_framework
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
