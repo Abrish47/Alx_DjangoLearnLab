@@ -20,10 +20,21 @@ class BookViewSet(viewsets.ModelViewSet):
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Read-only for unauthenticated
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Read-only for unauthenticated users
 
-     def get_queryset(self):
-        # Custom filter: Allow filtering by author name via query parameter
+    # Filtering: Allows filtering by title, author name, and publication year
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['title', 'author__name', 'publication_year']  # Fields to filter on
+
+    # Searching: Enables text search on title and author's name
+    search_fields = ['title', 'author__name']  # Fields searchable with ?search=
+
+    # Ordering: Allows sorting by title and publication_year
+    ordering_fields = ['title', 'publication_year']  # Fields to order by with ?ordering=
+    ordering = ['title']  # Default ordering if none specified
+
+    def get_queryset(self):
+        # Custom filter: Additional query param filtering (e.g., author name)
         queryset = super().get_queryset()
         author_name = self.request.query_params.get('author', None)
         if author_name:
