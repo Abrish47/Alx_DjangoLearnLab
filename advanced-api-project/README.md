@@ -1,44 +1,35 @@
 # Advanced API Project - Views Documentation
 
 ## Overview
-The project uses DRF generic views to handle CRUD for the `Book` model, enhanced with filtering, searching, and ordering in `BookListView`.
+The project uses DRF generic views for `Book` CRUD, enhanced with filtering, searching, ordering, and tested via unit tests in `api/test_views.py`.
 
-## Views Configuration
+## Testing Strategy
+- **Framework**: Uses Django’s test framework with DRF’s `APITestCase` and `APIClient`.
+- **Scope**: Tests CRUD operations, filtering/searching/ordering, and permissions for `Book` endpoints.
+- **Setup**: Creates a test user, author, and books in `setUp` for each test.
 
-### BookListView
-- **Endpoint**: `GET /api/books/`
-- **Purpose**: Lists all books with advanced query capabilities.
-- **Permissions**: `IsAuthenticatedOrReadOnly`
+## Test Cases
+### CRUD Operations
+- **`test_create_book_authenticated`**: POST /api/books/create/ (authenticated, 201 Created).
+- **`test_create_book_unauthenticated`**: POST /api/books/create/ (unauthenticated, 401 Unauthorized).
+- **`test_list_books`**: GET /api/books/ (200 OK, lists all books).
+- **`test_retrieve_book`**: GET /api/books/<pk>/ (200 OK, single book).
+- **`test_update_book_authenticated`**: PUT /api/books/update/<pk>/ (authenticated, 200 OK).
+- **`test_update_book_unauthenticated`**: PUT /api/books/update/<pk>/ (unauthenticated, 401 Unauthorized).
+- **`test_delete_book_authenticated`**: DELETE /api/books/delete/<pk>/ (authenticated, 204 No Content).
+- **`test_delete_book_unauthenticated`**: DELETE /api/books/delete/<pk>/ (unauthenticated, 401 Unauthorized).
 
-#### Filtering
-- **Implementation**: Uses `DjangoFilterBackend` with `filterset_fields = ['title', 'author__name', 'publication_year']`.
-- **Example**: 
-  - `GET /api/books/?title=Harry%20Potter` - Filter by exact title.
-  - `GET /api/books/?author__name=Rowling` - Filter by author name.
-  - `GET /api/books/?publication_year=1997` - Filter by year.
+### Filtering, Searching, Ordering
+- **`test_filter_by_title`**: GET /api/books/?title=Harry%20Potter (filters correctly).
+- **`test_search_by_author`**: GET /api/books/?search=Rowling (searches title/author).
+- **`test_order_by_publication_year`**: GET /api/books/?ordering=publication_year (sorts by year).
 
-#### Searching
-- **Implementation**: Uses `SearchFilter` with `search_fields = ['title', 'author__name']`.
-- **Example**: 
-  - `GET /api/books/?search=Harry` - Search titles and author names for “Harry”.
-  - `GET /api/books/?search=Rowling` - Search for “Rowling” in titles or authors.
+## Running Tests
+- **Command**: `python manage.py test api`
+- **Output**: Expect “Ran 11 tests in X.XXXs OK” if all pass.
+- **Interpretation**:
+  - “OK”: All tests passed—API works as expected.
+  - Failures: Check error messages (e.g., “expected 201, got 400”) and fix views/permissions.
 
-#### Ordering
-- **Implementation**: Uses `OrderingFilter` with `ordering_fields = ['title', 'publication_year']` and default `ordering = ['title']`.
-- **Example**: 
-  - `GET /api/books/?ordering=publication_year` - Sort by year (ascending).
-  - `GET /api/books/?ordering=-title` - Sort by title (descending).
-
-### Other Views
-- **BookDetailView**: `GET /api/books/<int:pk>/`
-- **BookCreateView**: `POST /api/books/create/`
-- **BookUpdateView**: `PUT /api/books/update/<int:pk>/`
-- **BookDeleteView**: `DELETE /api/books/delete/<int:pk>/`
-
-## Usage Examples
-- Filter and sort: `GET /api/books/?author__name=Rowling&ordering=-publication_year`
-- Search and filter: `GET /api/books/?search=Harry&publication_year=1997`
-
-## Testing Instructions
-- Use Postman or curl with query params to test filtering, searching, and ordering.
-- Verify results match expected criteria (e.g., correct books returned, proper order).
+## Other Views
+- See previous sections for endpoint details.
