@@ -1,46 +1,44 @@
 # Advanced API Project - Views Documentation
 
-This document outlines the configuration and operation of the generic views in the `api` app of the `advanced_api_project`.
-
 ## Overview
-The project uses DRF generic views to handle CRUD operations for the `Book` model, with customizations and permissions to meet specific requirements.
+The project uses DRF generic views to handle CRUD for the `Book` model, enhanced with filtering, searching, and ordering in `BookListView`.
 
 ## Views Configuration
 
 ### BookListView
 - **Endpoint**: `GET /api/books/`
-- **Purpose**: Lists all books in the database.
-- **Permissions**: `IsAuthenticatedOrReadOnly` - Anyone can view, but modifications require authentication.
-- **Custom Behavior**: Supports filtering by author name via query parameter (e.g., `?author=Rowling`).
+- **Purpose**: Lists all books with advanced query capabilities.
+- **Permissions**: `IsAuthenticatedOrReadOnly`
 
-### BookDetailView
-- **Endpoint**: `GET /api/books/<int:pk>/`
-- **Purpose**: Retrieves details of a single book by ID.
-- **Permissions**: `IsAuthenticatedOrReadOnly` - Read-only for unauthenticated users.
+#### Filtering
+- **Implementation**: Uses `DjangoFilterBackend` with `filterset_fields = ['title', 'author__name', 'publication_year']`.
+- **Example**: 
+  - `GET /api/books/?title=Harry%20Potter` - Filter by exact title.
+  - `GET /api/books/?author__name=Rowling` - Filter by author name.
+  - `GET /api/books/?publication_year=1997` - Filter by year.
 
-### BookCreateView
-- **Endpoint**: `POST /api/books/create/`
-- **Purpose**: Creates a new book instance.
-- **Permissions**: `IsAuthenticated` - Only logged-in users can create.
-- **Custom Behavior**: Logs the creation event (prints to console).
+#### Searching
+- **Implementation**: Uses `SearchFilter` with `search_fields = ['title', 'author__name']`.
+- **Example**: 
+  - `GET /api/books/?search=Harry` - Search titles and author names for “Harry”.
+  - `GET /api/books/?search=Rowling` - Search for “Rowling” in titles or authors.
 
-### BookUpdateView
-- **Endpoint**: `PUT /api/books/<int:pk>/update/`
-- **Purpose**: Updates an existing book by ID.
-- **Permissions**: `IsAuthenticated` - Only logged-in users can update.
-- **Custom Behavior**: Prevents updating `publication_year` to a future year (beyond 2025).
+#### Ordering
+- **Implementation**: Uses `OrderingFilter` with `ordering_fields = ['title', 'publication_year']` and default `ordering = ['title']`.
+- **Example**: 
+  - `GET /api/books/?ordering=publication_year` - Sort by year (ascending).
+  - `GET /api/books/?ordering=-title` - Sort by title (descending).
 
-### BookDeleteView
-- **Endpoint**: `DELETE /api/books/<int:pk>/delete/`
-- **Purpose**: Deletes a book by ID.
-- **Permissions**: `IsAuthenticated` - Only logged-in users can delete.
+### Other Views
+- **BookDetailView**: `GET /api/books/<int:pk>/`
+- **BookCreateView**: `POST /api/books/create/`
+- **BookUpdateView**: `PUT /api/books/update/<int:pk>/`
+- **BookDeleteView**: `DELETE /api/books/delete/<int:pk>/`
 
-## Custom Settings and Hooks
-- **Filtering**: `get_queryset` in `BookListView` adds author name filtering.
-- **Validation**: `perform_update` in `BookUpdateView` checks `publication_year`.
-- **Logging**: `perform_create` in `BookCreateView` demonstrates custom action on save.
+## Usage Examples
+- Filter and sort: `GET /api/books/?author__name=Rowling&ordering=-publication_year`
+- Search and filter: `GET /api/books/?search=Harry&publication_year=1997`
 
 ## Testing Instructions
-- Use Postman or curl to test endpoints.
-- Ensure authentication (e.g., via admin login) for POST, PUT, DELETE.
-- Verify read-only access for GET requests without login.
+- Use Postman or curl with query params to test filtering, searching, and ordering.
+- Verify results match expected criteria (e.g., correct books returned, proper order).
