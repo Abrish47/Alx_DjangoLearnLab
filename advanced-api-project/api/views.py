@@ -23,6 +23,14 @@ class BookListView(generics.ListAPIView):
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]  # Read-only for unauthenticated
 
+     def get_queryset(self):
+        # Custom filter: Allow filtering by author name via query parameter
+        queryset = super().get_queryset()
+        author_name = self.request.query_params.get('author', None)
+        if author_name:
+            queryset = queryset.filter(author__name__icontains=author_name)
+        return queryset
+
 # DetailView: Retrieves a single book by its ID
 # Accessible to anyone (read-only for unauthenticated users)
 class BookDetailView(generics.RetrieveAPIView):
@@ -38,7 +46,8 @@ class BookCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]  # Only authenticated users can create
 
     def perform_create(self, serializer):
-        # Custom behavior: Save the book with additional validation if needed
+        # Custom behavior: Log the creation (for demo, just print)
+        print(f"New book created: {serializer.validated_data['title']}")
         serializer.save()
 
 # UpdateView: Modifies an existing book by ID
@@ -49,9 +58,12 @@ class BookUpdateView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]  # Only authenticated users can update
 
     def perform_update(self, serializer):
-        # Custom behavior: Ensure validation runs before saving
+        # Custom behavior: Prevent updating publication_year to future
+        if 'publication_year' in serializer.validated_data:
+            current_year = self.request._request.META.get('SERVER_TIME', 2025)
+            if serializer.validated_data['publication_year'] > current_year:
+                raise serializers.ValidationError("Cannot update to a future year.")
         serializer.save()
-
 # DeleteView: Removes a book by ID
 # Restricted to authenticated users only
 class BookDeleteView(generics.DestroyAPIView):
