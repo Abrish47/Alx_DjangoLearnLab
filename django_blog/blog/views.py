@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth import login
 from .forms import CustomUserCreationForm
+from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 from .forms import ProfileForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -45,7 +46,7 @@ class PostDetailView(DetailView):
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = "blog/post_form.html"
-    fields = ["title", "content"]  
+    form_class = PostForm  # Use PostForm instead of fields
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -54,7 +55,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     template_name = "blog/post_form.html"
-    fields = ["title", "content"]
+    form_class = PostForm  # Use PostForm instead of fields
 
     def test_func(self):
         post = self.get_object()
