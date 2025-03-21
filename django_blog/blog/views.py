@@ -78,7 +78,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     template_name = "blog/comment_form.html"
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.post = Post.objects.get(pk=self.kwargs["post_id"])
+        form.instance.post = Post.objects.get(pk=self.kwargs["pk"])  # Changed from post_id to pk
         return super().form_valid(form)
     def get_success_url(self):
         return self.object.post.get_absolute_url()
