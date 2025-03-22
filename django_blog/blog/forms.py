@@ -18,6 +18,7 @@ class ProfileForm(forms.ModelForm):
         fields = ["email"]
 
 class PostForm(forms.ModelForm):
+    tags_widget_instance = TagWidget()
     class Meta:
         model = Post
         fields = ["title", "content","tags"]
