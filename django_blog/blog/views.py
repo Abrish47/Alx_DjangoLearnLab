@@ -10,6 +10,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Post
 from .models import Comment
+from django.db.models import Q
 
 def register(request):
     if request.method == "POST":
@@ -113,7 +114,7 @@ class TagListView(ListView):
 def search(request):
     query = request.GET.get("q")
     if query:
-        posts = post.objects.filter(
+        posts = Post.objects.filter(
             Q(title__icontains=query) |
             Q(content__icontains=query) |
             Q(tags__name__icontains=query)
