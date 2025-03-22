@@ -101,3 +101,23 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == comment.author
     def get_success_url(self):
         return self.object.post.get_absolute_url()
+    
+class TagListView(ListView):
+    model = Post
+    template_name = "blog/post_list.html"
+    context_object_name = "post"
+    def get_queryset(self):
+        tag = self.kwargs["tag"]
+        return Post.objects.filter(tags__name__in=[tag])
+    
+def search(request):
+    query = request.GET.get("q")
+    if query:
+        posts = post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    else:
+        posts = Post.objects.none()
+    return render(request, "blog/search_results.html",{"posts": posts, "query": query})

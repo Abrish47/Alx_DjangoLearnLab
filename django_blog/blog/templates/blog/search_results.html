@@ -1,6 +1,6 @@
 {% extends "blog/base.html" %}
 {% block content %}
-    <h2>Blog Posts</h2>
+    <h2>Search Results for "{{ query }}"</h2>
     {% for post in posts %}
         <article>
             <h3><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
@@ -15,9 +15,6 @@
             </p>
         </article>
     {% empty %}
-        <p>No posts available.</p>
+        <p>No posts found matching "{{ query }}".</p>
     {% endfor %}
-    {% if user.is_authenticated %}
-        <a href="{% url 'post_create' %}">New Post</a>
-    {% endif %}
 {% endblock %}
