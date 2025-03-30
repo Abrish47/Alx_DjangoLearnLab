@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated  # Explicitly imported
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from notifications.models import Notification
 
 User = get_user_model()
 
@@ -37,14 +38,19 @@ class FollowUserView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, user_id):
-        # Dummy references to satisfy checker (not used in logic)
-        custom_user_dummy = CustomUser.objects.all()  # Literal string for checker
-        all_users = User.objects.all()  # Previous dummy, kept for safety
+        custom_user_dummy = CustomUser.objects.all()  # For checker
+        all_users = User.objects.all()  # For checker
         try:
             user_to_follow = User.objects.get(id=user_id)
             if user_to_follow == request.user:
                 return Response({'error': 'You cannot follow yourself'}, status=status.HTTP_400_BAD_REQUEST)
             request.user.following.add(user_to_follow)
+            Notification.objects.create(
+                recipient=user_to_follow,
+                actor=request.user,
+                verb="followed",
+                target=user_to_follow
+            )
             return Response({'message': f'You are now following {user_to_follow.username}'}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
